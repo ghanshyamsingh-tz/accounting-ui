@@ -41,8 +41,9 @@
   <!-- Empty State -->
   <app-empty-state
     *ngIf="!loadingState.isLoading() && !loadingState.error() && ledgerEntries().length === 0"
-    message="No transactions found"
-    icon="receipt"
+    title="No transactions found"
+    message="There are no transaction records to display for this account."
+    icon="📝"
   ></app-empty-state>
 
   <!-- Ledger Entries Table -->
