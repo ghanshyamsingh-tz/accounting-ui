@@ -116,8 +116,9 @@
   <!-- Empty State -->
   <app-empty-state
     *ngIf="!loadingState.isLoading() && !loadingState.error() && invoices().length === 0"
-    message="No invoices found"
-    icon="receipt"
+    title="No invoices found"
+    message="There are no invoice records for this account."
+    icon="📄"
   ></app-empty-state>
 
   <!-- Invoice Cards Grid -->
