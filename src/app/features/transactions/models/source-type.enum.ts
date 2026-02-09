@@ -5,7 +5,7 @@
  * a charge (ride) or a payment (credit).
  * 
  * @remarks
- * - Ride: Debit entry from a completed ride (increases amount owed)
+ * - RideCharge: Debit entry from a completed ride (increases amount owed)
  * - Payment: Credit entry from a customer payment (decreases amount owed)
  * 
  * @example
@@ -18,16 +18,16 @@
  *   50,
  *   undefined,
  *   undefined,
- *   SourceType.Ride
+ *   SourceType.RideCharge
  * );
  * 
  * // Determine entry type for display
- * const isCharge = entry.sourceType === SourceType.Ride;
+ * const isCharge = entry.sourceType === SourceType.RideCharge;
  * const icon = isCharge ? '↓' : '↑';
  * const color = isCharge ? 'red' : 'green';
  * ```
  */
 export enum SourceType {
-  Ride = 'ride',
-  Payment = 'payment'
+  RideCharge = 'RideCharge',
+  Payment = 'Payment'
 }

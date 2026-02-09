@@ -7,6 +7,32 @@
     </p>
   </div>
 
+  <!-- Account Info -->
+  @if (accountName() && !loadingState.isLoading()) {
+    <div class="account-info-banner bg-white border border-gray-200 rounded-lg p-4 mb-4" data-testid="account-info">
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="text-sm font-semibold text-gray-700">Account</h3>
+          <p class="text-lg font-bold text-gray-900">{{ accountName() }}</p>
+        </div>
+        <div class="text-right">
+          <div class="mb-2">
+            <span class="text-sm text-gray-600">Opening Balance:</span>
+            <span class="ml-2 text-base font-semibold" [class.text-green-600]="openingBalance() >= 0" [class.text-red-600]="openingBalance() < 0">
+              {{ openingBalance() | currencyDecimal }}
+            </span>
+          </div>
+          <div>
+            <span class="text-sm text-gray-600">Closing Balance:</span>
+            <span class="ml-2 text-base font-semibold" [class.text-green-600]="closingBalance() >= 0" [class.text-red-600]="closingBalance() < 0">
+              {{ closingBalance() | currencyDecimal }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
   <!-- Invoice Filter Indicator -->
   @if (linkedInvoiceId()) {
     <div class="invoice-filter-banner bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" 
@@ -53,17 +79,17 @@
         <tr>
           <th scope="col">Date</th>
           <th scope="col">Source</th>
-          <th scope="col">Reference</th>
+          <th scope="col">Ledger Account</th>
+          <th scope="col">Description</th>
           <th scope="col" class="text-right">Debit</th>
           <th scope="col" class="text-right">Credit</th>
-          <th scope="col" class="text-right">Balance</th>
-          <th scope="col">Invoice</th>
+          <th scope="col">Reference</th>
         </tr>
       </thead>
       <tbody>
         <tr app-transaction-row
           *ngFor="let entry of ledgerEntries(); trackBy: trackByLedgerEntryId"
-          [ledgerEntry]="entry"
+          [transaction]="entry"
           [accountId]="accountId()">
         </tr>
       </tbody>

@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map, retry, catchError } from 'rxjs/operators';
 import { LedgerEntry } from '../models/ledger-entry.model';
+import { AccountStatement } from '../models/statement.model';
 import { SourceType } from '../models/source-type.enum';
 import { ApiResponse, SingleApiResponse } from '../../../core/models/api-response';
 import { API_CONFIG } from '../../../core/constants/app.constants';
@@ -112,7 +113,7 @@ export class TransactionsApiService {
     endDate?: string,
     sourceType?: SourceType,
     linkedInvoiceId?: string
-  ): Observable<ApiResponse<LedgerEntry>> {
+  ): Observable<AccountStatement> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('pageSize', pageSize.toString());
@@ -133,12 +134,12 @@ export class TransactionsApiService {
       params = params.set('linkedInvoiceId', linkedInvoiceId);
     }
 
-    return this.http.get<ApiResponse<LedgerEntry>>(
+    return this.http.get<AccountStatement>(
       `${this.baseUrl}/accounts/${accountId}/statements`,
       { params }
     ).pipe(
       withRetryAndErrorHandling('TransactionsApiService.getLedgerEntries')
-    ) as Observable<ApiResponse<LedgerEntry>>;
+    ) as Observable<AccountStatement>;
   }
 
   /**

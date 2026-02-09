@@ -29,7 +29,7 @@ export class TransactionFiltersComponent {
   readonly SourceType = SourceType;
   readonly sourceTypes = [
     { value: '', label: 'All Types' },
-    { value: SourceType.Ride, label: 'Ride' },
+    { value: SourceType.RideCharge, label: 'Ride Charge' },
     { value: SourceType.Payment, label: 'Payment' }
   ];
 

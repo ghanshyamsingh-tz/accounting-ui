@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { TransactionsApiService } from '../../services/transactions-api.service';
 import { TenantService } from '../../../../core/services/tenant.service';
-import { LedgerEntry } from '../../models/ledger-entry.model';
+import { StatementTransaction } from '../../models/statement.model';
 import { SourceType } from '../../models/source-type.enum';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
@@ -11,6 +11,7 @@ import { EmptyStateComponent } from '../../../../shared/components/empty-state/e
 import { ErrorStateComponent } from '../../../../shared/components/error-state/error-state.component';
 import { TransactionRowComponent } from '../transaction-row/transaction-row.component';
 import { TransactionFiltersComponent } from '../transaction-filters/transaction-filters.component';
+import { CurrencyDecimalPipe } from '../../../../shared/pipes/currency-decimal.pipe';
 import { createPaginationState, updatePaginationFromResponse, resetToFirstPage } from '../../../../core/utils/pagination.util';
 import { createLoadingState, setLoading, setError } from '../../../../core/utils/loading-state.util';
 
@@ -24,7 +25,8 @@ import { createLoadingState, setLoading, setError } from '../../../../core/utils
     EmptyStateComponent,
     ErrorStateComponent,
     TransactionRowComponent,
-    TransactionFiltersComponent
+    TransactionFiltersComponent,
+    CurrencyDecimalPipe
   ],
   templateUrl: './transaction-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -35,7 +37,10 @@ export class TransactionListComponent implements OnInit {
   private route = inject(ActivatedRoute);
 
   accountId = signal<string>('');
-  ledgerEntries = signal<LedgerEntry[]>([]);
+  ledgerEntries = signal<StatementTransaction[]>([]);
+  accountName = signal<string>('');
+  openingBalance = signal<number>(0);
+  closingBalance = signal<number>(0);
   loadingState = createLoadingState();
   pagination = createPaginationState();
 
@@ -97,25 +102,27 @@ export class TransactionListComponent implements OnInit {
       this.sourceType(),
       this.linkedInvoiceId()
     ).subscribe({
-      next: (response: any) => {
-        // API returns 'ledger' or 'ledgerEntries' instead of 'data'
-        this.ledgerEntries.set(response.ledger || response.ledgerEntries || response.data || []);
+      next: (statement) => {
+        // Set transactions from statement
+        this.ledgerEntries.set(statement.transactions || []);
+        this.accountName.set(statement.accountName || '');
+        this.openingBalance.set(statement.openingBalance || 0);
+        this.closingBalance.set(statement.closingBalance || 0);
         
-        // Map API pagination to our pagination state
-        if (response.pagination) {
-          const paginationData = response.pagination;
-          this.pagination.currentPage.set(paginationData.currentPage || 1);
-          this.pagination.totalPages.set(paginationData.totalPages || 0);
-          this.pagination.totalItems.set(paginationData.totalCount || paginationData.totalItems || 0);
-          this.pagination.pageSize.set(paginationData.pageSize || 50);
-          this.pagination.hasNext.set((paginationData.currentPage || 1) < (paginationData.totalPages || 0));
-          this.pagination.hasPrevious.set((paginationData.currentPage || 1) > 1);
-        }
+        // Calculate total pages
+        const totalPages = Math.ceil(statement.totalCount / statement.pageSize) || 1;
+        
+        this.pagination.currentPage.set(statement.page || 1);
+        this.pagination.totalPages.set(totalPages);
+        this.pagination.totalItems.set(statement.totalCount || 0);
+        this.pagination.pageSize.set(statement.pageSize || 50);
+        this.pagination.hasNext.set((statement.page || 1) < totalPages);
+        this.pagination.hasPrevious.set((statement.page || 1) > 1);
         
         setLoading(this.loadingState, false);
       },
       error: (err) => {
-        console.error('Failed to load ledger entries:', err);
+        console.error('Failed to load statement:', err);
         setError(this.loadingState, 'Failed to load transactions. Please try again.');
       }
     });
@@ -138,7 +145,7 @@ export class TransactionListComponent implements OnInit {
     this.loadLedgerEntries();
   }
 
-  trackByLedgerEntryId(index: number, entry: LedgerEntry): string {
+  trackByLedgerEntryId(index: number, entry: StatementTransaction): string {
     return entry.id;
   }
 }
