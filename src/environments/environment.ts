@@ -3,7 +3,7 @@
  */
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:5046',
+  apiUrl: 'http://localhost:8080',
   logLevel: 'error' as const,
   enableDetailedErrors: false,
   csrfCookieName: 'XSRF-TOKEN',
