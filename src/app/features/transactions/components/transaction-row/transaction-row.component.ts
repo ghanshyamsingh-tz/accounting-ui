@@ -1,6 +1,5 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { StatementTransaction } from '../../models/statement.model';
 import { CurrencyDecimalPipe } from '../../../../shared/pipes/currency-decimal.pipe';
 import { DateFormatPipe } from '../../../../shared/pipes/date-format.pipe';
@@ -10,7 +9,6 @@ import { DateFormatPipe } from '../../../../shared/pipes/date-format.pipe';
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink,
     CurrencyDecimalPipe,
     DateFormatPipe
   ],
